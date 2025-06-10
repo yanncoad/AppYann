@@ -30,12 +30,14 @@
 <div id="tasks"></div>
 <script>
 let tasks = [];
+let initialStatuses = {};
 
 // Charger les tâches depuis le fichier JSON
 fetch('tasks.json')
     .then(resp => resp.json())
     .then(data => {
         tasks = data.tasks;
+        initialStatuses = data.initialStatuses || {};
         render();
     });
 
@@ -48,6 +50,7 @@ function formatDate(date) {
 function loadStatuses(dateStr) {
     const stored = localStorage.getItem('tasks_' + dateStr);
     if (stored) return JSON.parse(stored);
+    if (initialStatuses[dateStr]) return initialStatuses[dateStr];
     return tasks.map(() => false);
 }
 
