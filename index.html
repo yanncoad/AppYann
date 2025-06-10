@@ -1,10 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Liste de tâches quotidiennes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .date-navigation {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .task {
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
+<h1>Tâches du jour</h1>
+<div class="date-navigation">
+    <button id="prev">Précédent</button>
+    <span id="current-date"></span>
+    <button id="next">Suivant</button>
+</div>
+<div id="tasks"></div>
+<script>
+const tasks = [
+    'Sport',
+    'Petit déjeuner équilibré',
+    'Déjeuner équilibré',
+    'Diner équilibré',
+    'Post Tiktok lolo.puzzle',
+    'Post Tiktok LBB',
+    'Post Tiktok bretagnifique',
+    'Post Tiktok footballteamlogocircle',
+    'Post Instagram LBB',
+    'Post Instagram bretagnifique',
+    'Post Instagram lolo.puzzle',
+    'Formation Anglais',
+    'Formation Codex / ChatGPT',
+    'Lire 15min',
+    'Regarder un épisode série',
+    'Tache ménagère',
+    'Jouer avec les enfants'
+];
 
+let currentDate = new Date();
+
+function formatDate(date) {
+    return date.toISOString().split('T')[0];
+}
+
+function loadStatuses(dateStr) {
+    const stored = localStorage.getItem('tasks_' + dateStr);
+    if (stored) return JSON.parse(stored);
+    return tasks.map(() => false);
+}
+
+function saveStatuses(dateStr, statuses) {
+    localStorage.setItem('tasks_' + dateStr, JSON.stringify(statuses));
+}
+
+function render() {
+    const dateStr = formatDate(currentDate);
+    document.getElementById('current-date').textContent = dateStr;
+    const statuses = loadStatuses(dateStr);
+    const container = document.getElementById('tasks');
+    container.innerHTML = '';
+    tasks.forEach((task, i) => {
+        const div = document.createElement('div');
+        div.className = 'task';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = 'task_' + i;
+        checkbox.checked = statuses[i];
+        checkbox.addEventListener('change', () => {
+            statuses[i] = checkbox.checked;
+            saveStatuses(dateStr, statuses);
+        });
+        const label = document.createElement('label');
+        label.htmlFor = 'task_' + i;
+        label.textContent = task;
+        div.appendChild(checkbox);
+        div.appendChild(label);
+        container.appendChild(div);
+    });
+}
+
+document.getElementById('prev').addEventListener('click', () => {
+    currentDate.setDate(currentDate.getDate() - 1);
+    render();
+});
+
+document.getElementById('next').addEventListener('click', () => {
+    currentDate.setDate(currentDate.getDate() + 1);
+    render();
+});
+
+render();
+</script>
 </body>
 </html>
