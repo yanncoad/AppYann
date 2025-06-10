@@ -29,25 +29,15 @@
 </div>
 <div id="tasks"></div>
 <script>
-const tasks = [
-    'Sport',
-    'Petit déjeuner équilibré',
-    'Déjeuner équilibré',
-    'Diner équilibré',
-    'Post Tiktok lolo.puzzle',
-    'Post Tiktok LBB',
-    'Post Tiktok bretagnifique',
-    'Post Tiktok footballteamlogocircle',
-    'Post Instagram LBB',
-    'Post Instagram bretagnifique',
-    'Post Instagram lolo.puzzle',
-    'Formation Anglais',
-    'Formation Codex / ChatGPT',
-    'Lire 15min',
-    'Regarder un épisode série',
-    'Tache ménagère',
-    'Jouer avec les enfants'
-];
+let tasks = [];
+
+// Charger les tâches depuis le fichier JSON
+fetch('tasks.json')
+    .then(resp => resp.json())
+    .then(data => {
+        tasks = data.tasks;
+        render();
+    });
 
 let currentDate = new Date();
 
@@ -100,8 +90,6 @@ document.getElementById('next').addEventListener('click', () => {
     currentDate.setDate(currentDate.getDate() + 1);
     render();
 });
-
-render();
 </script>
 </body>
 </html>
