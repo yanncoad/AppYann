@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    "Sport",
+    "Petit déjeuner équilibré",
+    "Déjeuner équilibré",
+    "Diner équilibré",
+    "Post Tiktok lolo.puzzle",
+    "Post Tiktok LBB",
+    "Post Tiktok bretagnifique",
+    "Post Tiktok footballteamlogocircle",
+    "Post Instagram LBB",
+    "Post Instagram bretagnifique",
+    "Post Instagram lolo.puzzle",
+    "Formation Anglais",
+    "Formation Codex / ChatGPT",
+    "Lire 15min",
+    "Regarder un épisode série",
+    "Tache ménagère",
+    "Jouer avec les enfants"
+  ],
+  "initialStatuses": {
+    "2025-06-09": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+    "2025-06-10": [true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+  }
+}

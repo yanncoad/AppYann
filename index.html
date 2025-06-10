@@ -29,25 +29,17 @@
 </div>
 <div id="tasks"></div>
 <script>
-const tasks = [
-    'Sport',
-    'Petit déjeuner équilibré',
-    'Déjeuner équilibré',
-    'Diner équilibré',
-    'Post Tiktok lolo.puzzle',
-    'Post Tiktok LBB',
-    'Post Tiktok bretagnifique',
-    'Post Tiktok footballteamlogocircle',
-    'Post Instagram LBB',
-    'Post Instagram bretagnifique',
-    'Post Instagram lolo.puzzle',
-    'Formation Anglais',
-    'Formation Codex / ChatGPT',
-    'Lire 15min',
-    'Regarder un épisode série',
-    'Tache ménagère',
-    'Jouer avec les enfants'
-];
+let tasks = [];
+let initialStatuses = {};
+
+// Charger les tâches depuis le fichier JSON
+fetch('tasks.json')
+    .then(resp => resp.json())
+    .then(data => {
+        tasks = data.tasks;
+        initialStatuses = data.initialStatuses || {};
+        render();
+    });
 
 let currentDate = new Date();
 
@@ -58,6 +50,7 @@ function formatDate(date) {
 function loadStatuses(dateStr) {
     const stored = localStorage.getItem('tasks_' + dateStr);
     if (stored) return JSON.parse(stored);
+    if (initialStatuses[dateStr]) return initialStatuses[dateStr];
     return tasks.map(() => false);
 }
 
@@ -100,8 +93,6 @@ document.getElementById('next').addEventListener('click', () => {
     currentDate.setDate(currentDate.getDate() + 1);
     render();
 });
-
-render();
 </script>
 </body>
 </html>
