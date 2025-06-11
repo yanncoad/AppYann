@@ -9,11 +9,13 @@
             --bg: #ffffff;
             --fg: #000000;
             --card: #f0f0f0;
+            --accent: #007aff;
         }
         [data-theme="dark"] {
             --bg: #1d1d1f;
             --fg: #ffffff;
             --card: #2c2c2e;
+            --accent: #0a84ff;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
@@ -21,25 +23,22 @@
             color: var(--fg);
             margin: 0;
             min-height: 100vh;
+            padding-bottom: 60px;
         }
-        h1 { text-align:center; margin:16px 0; }
-        .nav { text-align:center; margin-bottom:10px; }
-        .nav a { margin:0 8px; color:var(--fg); text-decoration:none; }
+        h1 { text-align:center; margin:16px 0; position:relative; }
+        #toggle-theme { position:absolute; right:16px; top:0; background:transparent; border:none; font-size:1.2em; }
         #controls { text-align:center; margin-bottom:20px; }
         #list { width:95%; max-width:500px; margin:0 auto; }
         .session { display:flex; align-items:center; background:var(--card); margin:4px 0; padding:8px 12px; border-radius:10px; }
         .session.done { background:#4caf50; color:#fff; }
         .session span { flex:1; }
         dialog form { display:flex; flex-direction:column; gap:8px; }
+        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--card); display:flex; justify-content:space-around; padding:8px 0; border-top:1px solid #aaa; }
+        .bottom-nav a { color:var(--fg); text-decoration:none; font-size:1.4em; }
     </style>
 </head>
 <body>
-<h1>Séances de sport</h1>
-<div class="nav">
-    <a href="index.html">Accueil</a>
-    <a href="sport.html">Sport</a>
-    <a href="stats.html">Statistiques</a>
-</div>
+<h1>Séances de sport <button id="toggle-theme">🌙</button></h1>
 <div id="controls">
     <button id="add">Ajouter une séance</button>
 </div>
@@ -55,6 +54,11 @@
         </div>
     </form>
 </dialog>
+<nav class="bottom-nav">
+    <a href="index.html">🏠</a>
+    <a href="sport.html">⚽</a>
+    <a href="stats.html">📊</a>
+</nav>
 <script>
 const categories = {
     "Santé": [
@@ -91,6 +95,7 @@ const sportIndex = tasks.indexOf('Sport');
 function initTheme(){
     const th=localStorage.getItem('theme')||'dark';
     document.documentElement.setAttribute('data-theme',th);
+    document.getElementById('toggle-theme').textContent = th==='dark'?'🌙':'☀️';
 }
 function loadSessions(){
     return JSON.parse(localStorage.getItem('sport_sessions')||'[]');
@@ -153,6 +158,13 @@ document.getElementById('form').addEventListener('submit',e=>{
     const data={date:document.getElementById('date').value,sport:document.getElementById('sport').value,detail:document.getElementById('detail').value};
     if(idx!=null){sessions[idx]=data;}else{sessions.push(data);}
     saveSessions(sessions);document.getElementById('modal').close();render();
+});
+document.getElementById('toggle-theme').addEventListener('click',()=>{
+    const current=document.documentElement.getAttribute('data-theme');
+    const next=current==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    localStorage.setItem('theme',next);
+    document.getElementById('toggle-theme').textContent = next==='dark'?'🌙':'☀️';
 });
 initTheme();
 render();

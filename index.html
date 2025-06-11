@@ -10,11 +10,13 @@
             --bg: #ffffff;
             --fg: #000000;
             --card: #f0f0f0;
+            --accent: #007aff;
         }
         [data-theme="dark"] {
             --bg: #1d1d1f;
             --fg: #ffffff;
             --card: #2c2c2e;
+            --accent: #0a84ff;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
@@ -22,10 +24,20 @@
             color: var(--fg);
             margin: 0;
             min-height: 100vh;
+            padding-bottom: 60px; /* espace pour la nav */
         }
         h1 {
             text-align: center;
             margin: 16px 0;
+            position: relative;
+        }
+        #toggle-theme {
+            position: absolute;
+            right: 16px;
+            top: 0;
+            background: transparent;
+            border: none;
+            font-size: 1.2em;
         }
         .date-navigation {
             text-align: center;
@@ -58,6 +70,7 @@
             margin: 4px 0;
             padding: 8px 12px;
             border-radius: 10px;
+            transition: background 0.3s;
         }
         .task.checked {
             background: #4caf50;
@@ -71,39 +84,95 @@
             font-size: 0.8em;
             margin-left: 4px;
         }
-        .nav {
-            text-align: center;
-            margin-bottom: 10px;
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #aaa;
         }
-        .nav a {
-            margin: 0 8px;
+        .bottom-nav a {
             color: var(--fg);
             text-decoration: none;
+            font-size: 1.4em;
         }
         #controls {
             text-align: center;
             margin-bottom: 20px;
         }
+        /* Progress bar */
+        #progress-container {
+            width: 95%;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            background: var(--card);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        #progress-bar {
+            height: 14px;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        #progress-text {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            font-size: 0.8em;
+            color: var(--fg);
+        }
+        .task input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--fg);
+            border-radius: 6px;
+            position: relative;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .task input[type="checkbox"]:active {
+            transform: scale(0.8);
+        }
+        .task input[type="checkbox"]:checked {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+        .task input[type="checkbox"]:checked::after {
+            content: '✔';
+            position: absolute;
+            color: #fff;
+            font-size: 16px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 <body>
-<h1>Tâches du jour</h1>
-<div class="nav">
-    <a href="index.html">Accueil</a>
-    <a href="sport.html">Sport</a>
-    <a href="stats.html">Statistiques</a>
-</div>
+<h1>Tâches du jour <button id="toggle-theme">🌙</button></h1>
 <div class="date-navigation">
     <button id="prev">Précédent</button>
     <span id="current-date"></span>
     <button id="next">Suivant</button>
 </div>
+<div id="progress-container"><div id="progress-bar"></div><span id="progress-text"></span></div>
 <div id="controls">
-    <button id="toggle-theme">Thème sombre/clair</button>
     <button id="export">Exporter</button>
     <input type="file" id="import" accept="application/json">
 </div>
 <div id="tasks"></div>
+<nav class="bottom-nav">
+    <a href="index.html">🏠</a>
+    <a href="sport.html">⚽</a>
+    <a href="stats.html">📊</a>
+</nav>
 <script>
 const categories = {
     "Santé": [
@@ -168,6 +237,8 @@ function render(){
     const statuses = loadStatuses(dateStr);
     const container = document.getElementById('tasks');
     container.innerHTML = '';
+    const total = statuses.length;
+    let doneCount = 0;
     let idx=0;
     for(const [cat, list] of Object.entries(categories)){
         const catDiv = document.createElement('div');
@@ -198,10 +269,14 @@ function render(){
             div.appendChild(label);
             div.appendChild(serieSpan);
             catDiv.appendChild(div);
+            if(cb.checked) doneCount++;
             idx++;
         });
         container.appendChild(catDiv);
     }
+    const percent = Math.round((doneCount/total)*100);
+    document.getElementById('progress-bar').style.width = percent+"%";
+    document.getElementById('progress-text').textContent = `${doneCount}/${total}`;
 }
 function exportData(){
     const data={tasks:{},seriesRecords:JSON.parse(localStorage.getItem('series_records')||'{}')};
@@ -233,6 +308,7 @@ function importData(e){
 function initTheme(){
     const th = localStorage.getItem('theme')||'dark';
     document.documentElement.setAttribute('data-theme',th);
+    document.getElementById('toggle-theme').textContent = th==='dark'?'🌙':'☀️';
 }
 initTheme();
 render();
@@ -243,6 +319,7 @@ document.getElementById('toggle-theme').addEventListener('click',()=>{
     const next=current==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme',next);
     localStorage.setItem('theme',next);
+    document.getElementById('toggle-theme').textContent = next==='dark'?'🌙':'☀️';
 });
 document.getElementById('export').addEventListener('click',exportData);
 document.getElementById('import').addEventListener('change',importData);
