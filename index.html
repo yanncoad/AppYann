@@ -55,6 +55,14 @@ function saveStatuses(dateStr, statuses) {
     localStorage.setItem('tasks_' + dateStr, JSON.stringify(statuses));
 }
 
+function updateServer(dateStr, statuses) {
+    fetch('/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: dateStr, statuses })
+    });
+}
+
 function render() {
     const dateStr = formatDate(currentDate);
     document.getElementById('current-date').textContent = dateStr;
@@ -71,6 +79,7 @@ function render() {
         checkbox.addEventListener('change', () => {
             statuses[i] = checkbox.checked;
             saveStatuses(dateStr, statuses);
+            updateServer(dateStr, statuses);
         });
         const label = document.createElement('label');
         label.htmlFor = 'task_' + i;
