@@ -71,6 +71,26 @@
             max-width: 500px;
             margin: 0 auto 20px;
         }
+        #sessions {
+            width: 95%;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+        .session {
+            display: flex;
+            align-items: center;
+            background: var(--card);
+            margin: 4px 0;
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+        .session.done {
+            background: #4caf50;
+            color: #fff;
+        }
+        .session span {
+            flex: 1;
+        }
         .category {
             margin-bottom: 16px;
         }
@@ -190,6 +210,7 @@
 </div>
 <div id="progress-container"><div id="progress-bar"></div><span id="progress-text"></span></div>
 <div id="tasks"></div>
+<div id="sessions"></div>
 <nav class="bottom-nav">
     <a href="index.html"><i class="fas fa-home"></i><span>Accueil</span></a>
     <a href="sport.html"><i class="fas fa-futbol"></i><span>Sport</span></a>
@@ -227,6 +248,7 @@ const categories = {
     ]
 };
 const tasks = Object.values(categories).flat();
+const sportIndex = tasks.indexOf('Sport');
 let currentDate = new Date();
 function formatDate(d){return d.toISOString().split('T')[0];}
 function loadStatuses(date){
@@ -252,6 +274,25 @@ function updateRecord(task, count){
     const rec = records[task]||0;
     if(count>rec){ records[task]=count; localStorage.setItem('series_records', JSON.stringify(records)); }
     return records[task]||count;
+}
+function loadSessions(){
+    return JSON.parse(localStorage.getItem('sport_sessions')||'[]');
+}
+function renderSessions(dateStr, done){
+    const list=document.getElementById('sessions');
+    const sessions=loadSessions().filter(s=>s.date===dateStr);
+    list.innerHTML='';
+    sessions.forEach(s=>{
+        const div=document.createElement('div');
+        div.className='session'+(done?' done':'');
+        const sport=document.createElement('span');
+        sport.textContent=s.sport;
+        const detail=document.createElement('span');
+        detail.textContent=s.detail;
+        div.appendChild(sport);
+        div.appendChild(detail);
+        list.appendChild(div);
+    });
 }
 function render(){
     const dateStr = formatDate(currentDate);
@@ -300,6 +341,7 @@ function render(){
     const percent = Math.round((doneCount/total)*100);
     document.getElementById('progress-bar').style.width = percent+"%";
     document.getElementById('progress-text').textContent = `${doneCount}/${total}`;
+    renderSessions(dateStr, statuses[sportIndex]);
 }
 function setThemeIcon(th){
     document.getElementById('toggle-theme').innerHTML = th==='dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
