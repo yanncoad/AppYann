@@ -93,17 +93,24 @@
             background: var(--card);
             display: flex;
             justify-content: space-around;
-            padding: 8px 0;
+            padding: 10px 0 5px;
             border-top: 1px solid #aaa;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+            z-index: 1000;
         }
         .bottom-nav a {
             color: var(--fg);
             text-decoration: none;
-            font-size: 1.4em;
+            font-size: 1.2em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        #controls {
-            text-align: center;
-            margin-bottom: 20px;
+        .bottom-nav a span {
+            font-size: 0.7em;
+        }
+        .bottom-nav a.active {
+            color: var(--accent);
         }
         /* Progress bar */
         #progress-container {
@@ -164,15 +171,11 @@
     <button id="next">Suivant</button>
 </div>
 <div id="progress-container"><div id="progress-bar"></div><span id="progress-text"></span></div>
-<div id="controls">
-    <button id="export">Exporter</button>
-    <input type="file" id="import" accept="application/json">
-</div>
 <div id="tasks"></div>
 <nav class="bottom-nav">
-    <a href="index.html"><i class="fas fa-home"></i></a>
-    <a href="sport.html"><i class="fas fa-futbol"></i></a>
-    <a href="stats.html"><i class="fas fa-chart-bar"></i></a>
+    <a href="index.html"><i class="fas fa-home"></i><span>Accueil</span></a>
+    <a href="sport.html"><i class="fas fa-futbol"></i><span>Sport</span></a>
+    <a href="stats.html"><i class="fas fa-chart-bar"></i><span>Stats</span></a>
 </nav>
 <script>
 const categories = {
@@ -280,33 +283,6 @@ function render(){
     document.getElementById('progress-bar').style.width = percent+"%";
     document.getElementById('progress-text').textContent = `${doneCount}/${total}`;
 }
-function exportData(){
-    const data={tasks:{},seriesRecords:JSON.parse(localStorage.getItem('series_records')||'{}')};
-    for(let i=0;i<localStorage.length;i++){
-        const key=localStorage.key(i);
-        if(key.startsWith('tasks_')){data.tasks[key.substring(6)]=JSON.parse(localStorage.getItem(key));}
-    }
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='suivi.json';
-    a.click();
-}
-function importData(e){
-    const f=e.target.files[0];
-    if(!f)return;
-    const r=new FileReader();
-    r.onload=ev=>{
-        try{
-            const data=JSON.parse(ev.target.result);
-            if(data.seriesRecords){localStorage.setItem('series_records',JSON.stringify(data.seriesRecords));}
-            if(data.tasks){for(const [d,s] of Object.entries(data.tasks)){localStorage.setItem('tasks_'+d,JSON.stringify(s));}}
-            alert('Import réussi');
-            render();
-        }catch(err){alert('Erreur lors de l\'import');}
-    };
-    r.readAsText(f);
-}
 function setThemeIcon(th){
     document.getElementById('toggle-theme').innerHTML = th==='dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
 }
@@ -330,8 +306,11 @@ document.getElementById('toggle-theme').addEventListener('click',()=>{
     localStorage.setItem('theme',next);
     setThemeIcon(next);
 });
-document.getElementById('export').addEventListener('click',exportData);
-document.getElementById('import').addEventListener('change',importData);
+document.querySelectorAll('.bottom-nav a').forEach(a=>{
+    if(a.getAttribute('href')===location.pathname.split('/').pop()){
+        a.classList.add('active');
+    }
+});
 if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js');}
 </script>
 </body>

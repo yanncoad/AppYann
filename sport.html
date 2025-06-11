@@ -34,8 +34,10 @@
         .session.done { background:#4caf50; color:#fff; }
         .session span { flex:1; }
         dialog form { display:flex; flex-direction:column; gap:8px; }
-        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--card); display:flex; justify-content:space-around; padding:8px 0; border-top:1px solid #aaa; }
-        .bottom-nav a { color:var(--fg); text-decoration:none; font-size:1.4em; }
+        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--card); display:flex; justify-content:space-around; padding:10px 0 5px; border-top:1px solid #aaa; box-shadow:0 -2px 5px rgba(0,0,0,0.3); z-index:1000; }
+        .bottom-nav a { color:var(--fg); text-decoration:none; font-size:1.2em; display:flex; flex-direction:column; align-items:center; }
+        .bottom-nav a span { font-size:0.7em; }
+        .bottom-nav a.active { color:var(--accent); }
     </style>
 </head>
 <body>
@@ -56,9 +58,9 @@
     </form>
 </dialog>
 <nav class="bottom-nav">
-    <a href="index.html"><i class="fas fa-home"></i></a>
-    <a href="sport.html"><i class="fas fa-futbol"></i></a>
-    <a href="stats.html"><i class="fas fa-chart-bar"></i></a>
+    <a href="index.html"><i class="fas fa-home"></i><span>Accueil</span></a>
+    <a href="sport.html"><i class="fas fa-futbol"></i><span>Sport</span></a>
+    <a href="stats.html"><i class="fas fa-chart-bar"></i><span>Stats</span></a>
 </nav>
 <script>
 const categories = {
@@ -169,6 +171,11 @@ document.getElementById('toggle-theme').addEventListener('click',()=>{
     document.documentElement.setAttribute('data-theme',next);
     localStorage.setItem('theme',next);
     setThemeIcon(next);
+});
+document.querySelectorAll('.bottom-nav a').forEach(a=>{
+    if(a.getAttribute('href')===location.pathname.split('/').pop()){
+        a.classList.add('active');
+    }
 });
 initTheme();
 render();
