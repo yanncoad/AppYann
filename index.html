@@ -1,55 +1,79 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <title>Liste de tâches quotidiennes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi quotidien</title>
+    <link rel="manifest" href="manifest.json">
     <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #000000;
+            --card: #f0f0f0;
+        }
+        [data-theme="dark"] {
+            --bg: #1d1d1f;
+            --fg: #ffffff;
+            --card: #2c2c2e;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-            background: #1d1d1f;
-            color: #fff;
+            background: var(--bg);
+            color: var(--fg);
             margin: 0;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
         h1 {
-            margin-top: 40px;
-            margin-bottom: 20px;
-            font-weight: 600;
+            text-align: center;
+            margin: 16px 0;
         }
         .date-navigation {
-            margin-bottom: 20px;
+            text-align: center;
+            margin-bottom: 10px;
         }
         .date-navigation button {
-            background: #3a3a3c;
-            color: #fff;
+            background: var(--card);
+            color: var(--fg);
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 8px;
-            margin: 0 8px;
-            cursor: pointer;
+            margin: 0 4px;
         }
         #tasks {
-            width: 90%;
-            max-width: 400px;
+            width: 95%;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+        .category {
+            margin-bottom: 16px;
+        }
+        .category h2 {
+            margin: 8px 0;
+            font-size: 1.2em;
         }
         .task {
             display: flex;
             align-items: center;
-            background: #2c2c2e;
-            margin: 6px 0;
-            padding: 12px 16px;
-            border-radius: 12px;
+            background: var(--card);
+            margin: 4px 0;
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+        .task.checked {
+            background: #4caf50;
+            color: #fff;
         }
         .task label {
-            margin-left: 10px;
+            margin-left: 8px;
             flex: 1;
         }
-        .task input[type=checkbox] {
-            width: 20px;
-            height: 20px;
+        .series {
+            font-size: 0.8em;
+            margin-left: 4px;
+        }
+        #controls {
+            text-align: center;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -60,104 +84,155 @@
     <span id="current-date"></span>
     <button id="next">Suivant</button>
 </div>
+<div id="controls">
+    <button id="toggle-theme">Thème sombre/clair</button>
+    <button id="export">Exporter</button>
+    <input type="file" id="import" accept="application/json">
+</div>
 <div id="tasks"></div>
 <script>
-let tasks = [];
-const defaultTasks = [
-    "Sport",
-    "Petit déjeuner équilibré",
-    "Déjeuner équilibré",
-    "Diner équilibré",
-    "Post Tiktok lolo.puzzle",
-    "Post Tiktok LBB",
-    "Post Tiktok bretagnifique",
-    "Post Tiktok footballteamlogocircle",
-    "Post Instagram LBB",
-    "Post Instagram bretagnifique",
-    "Post Instagram lolo.puzzle",
-    "Formation Anglais",
-    "Formation Codex / ChatGPT",
-    "Lire 15min",
-    "Regarder un épisode série",
-    "Tache ménagère",
-    "Jouer avec les enfants"
-];
-
-// Charger les tâches depuis le fichier JSON
-fetch('tasks.json')
-    .then(resp => {
-        if (!resp.ok) throw new Error('fetch error');
-        return resp.json();
-    })
-    .then(data => {
-        tasks = data.tasks;
-        render();
-    })
-    .catch(() => {
-        tasks = defaultTasks;
-        render();
-    });
-
+const categories = {
+    "Santé": [
+        "Sport",
+        "Petit déjeuner équilibré",
+        "Déjeuner équilibré",
+        "Dîner équilibré",
+        "Pas de grignotage"
+    ],
+    "Réseaux sociaux": [
+        "Post Tiktok lolo.puzzle",
+        "Post Tiktok LBB",
+        "Post Tiktok mymy.puzzle",
+        "Post Tiktok footballteamlogocircle",
+        "Post Tiktok kanoodle_addict",
+        "Post Tiktok kanoodle_experience",
+        "Post Instagram LBB",
+        "Post Instagram bretagnifique",
+        "Post Instagram lolo.puzzle"
+    ],
+    "Formation": [
+        "Formation Anglais",
+        "Formation Codex / ChatGPT"
+    ],
+    "Autre": [
+        "Lire 15 min",
+        "Regarder un épisode série",
+        "Tâche ménagère",
+        "Jouer avec les enfants"
+    ]
+};
+const tasks = Object.values(categories).flat();
 let currentDate = new Date();
-
-function formatDate(date) {
-    return date.toISOString().split('T')[0];
+function formatDate(d){return d.toISOString().split('T')[0];}
+function loadStatuses(date){
+    const s = localStorage.getItem('tasks_'+date);
+    return s?JSON.parse(s):tasks.map(()=>false);
 }
-
-function loadStatuses(dateStr) {
-    const stored = localStorage.getItem('tasks_' + dateStr);
-    if (stored) return JSON.parse(stored);
-    return tasks.map(() => false);
+function saveStatuses(date,statuses){
+    localStorage.setItem('tasks_'+date, JSON.stringify(statuses));
 }
-
-function saveStatuses(dateStr, statuses) {
-    localStorage.setItem('tasks_' + dateStr, JSON.stringify(statuses));
+function calculateSeries(index,date){
+    let count = 0;
+    let d = new Date(date);
+    while(true){
+        const st = JSON.parse(localStorage.getItem('tasks_'+formatDate(d))||null);
+        if(st && st[index]){
+            count++; d.setDate(d.getDate()-1);
+        } else {break;}
+    }
+    return count;
 }
-
-function updateServer(dateStr, statuses) {
-    fetch('/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date: dateStr, statuses })
-    });
+function updateRecord(task, count){
+    const records = JSON.parse(localStorage.getItem('series_records')||'{}');
+    const rec = records[task]||0;
+    if(count>rec){ records[task]=count; localStorage.setItem('series_records', JSON.stringify(records)); }
+    return records[task]||count;
 }
-
-function render() {
+function render(){
     const dateStr = formatDate(currentDate);
     document.getElementById('current-date').textContent = dateStr;
     const statuses = loadStatuses(dateStr);
     const container = document.getElementById('tasks');
     container.innerHTML = '';
-    tasks.forEach((task, i) => {
-        const div = document.createElement('div');
-        div.className = 'task';
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = 'task_' + i;
-        checkbox.checked = statuses[i];
-        checkbox.addEventListener('change', () => {
-            statuses[i] = checkbox.checked;
-            saveStatuses(dateStr, statuses);
-            updateServer(dateStr, statuses);
+    let idx=0;
+    for(const [cat, list] of Object.entries(categories)){
+        const catDiv = document.createElement('div');
+        catDiv.className = 'category';
+        const title = document.createElement('h2');
+        title.textContent = cat;
+        catDiv.appendChild(title);
+        list.forEach(task => {
+            const div = document.createElement('div');
+            div.className = 'task' + (statuses[idx] ? ' checked' : '');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = statuses[idx];
+            const i = idx;
+            cb.addEventListener('change',()=>{
+                statuses[i] = cb.checked;
+                saveStatuses(dateStr,statuses);
+                render();
+            });
+            const label=document.createElement('label');
+            label.textContent=task;
+            const seriesCount = calculateSeries(idx,dateStr);
+            const record = updateRecord(task, seriesCount);
+            const serieSpan = document.createElement('span');
+            serieSpan.className='series';
+            serieSpan.textContent = `🔥 ${seriesCount} (record : ${record})`;
+            div.appendChild(cb);
+            div.appendChild(label);
+            div.appendChild(serieSpan);
+            catDiv.appendChild(div);
+            idx++;
         });
-        const label = document.createElement('label');
-        label.htmlFor = 'task_' + i;
-        label.textContent = task;
-        div.appendChild(checkbox);
-        div.appendChild(label);
-        container.appendChild(div);
-    });
+        container.appendChild(catDiv);
+    }
 }
-
-document.getElementById('prev').addEventListener('click', () => {
-    currentDate.setDate(currentDate.getDate() - 1);
-    render();
+function exportData(){
+    const data={tasks:{},seriesRecords:JSON.parse(localStorage.getItem('series_records')||'{}')};
+    for(let i=0;i<localStorage.length;i++){
+        const key=localStorage.key(i);
+        if(key.startsWith('tasks_')){data.tasks[key.substring(6)]=JSON.parse(localStorage.getItem(key));}
+    }
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='suivi.json';
+    a.click();
+}
+function importData(e){
+    const f=e.target.files[0];
+    if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+        try{
+            const data=JSON.parse(ev.target.result);
+            if(data.seriesRecords){localStorage.setItem('series_records',JSON.stringify(data.seriesRecords));}
+            if(data.tasks){for(const [d,s] of Object.entries(data.tasks)){localStorage.setItem('tasks_'+d,JSON.stringify(s));}}
+            alert('Import réussi');
+            render();
+        }catch(err){alert('Erreur lors de l\'import');}
+    };
+    r.readAsText(f);
+}
+function initTheme(){
+    const th = localStorage.getItem('theme')||'dark';
+    document.documentElement.setAttribute('data-theme',th);
+}
+initTheme();
+render();
+document.getElementById('prev').addEventListener('click',()=>{currentDate.setDate(currentDate.getDate()-1);render();});
+document.getElementById('next').addEventListener('click',()=>{currentDate.setDate(currentDate.getDate()+1);render();});
+document.getElementById('toggle-theme').addEventListener('click',()=>{
+    const current=document.documentElement.getAttribute('data-theme');
+    const next=current==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    localStorage.setItem('theme',next);
 });
-
-document.getElementById('next').addEventListener('click', () => {
-    currentDate.setDate(currentDate.getDate() + 1);
-    render();
-});
+document.getElementById('export').addEventListener('click',exportData);
+document.getElementById('import').addEventListener('change',importData);
+if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js');}
 </script>
 </body>
 </html>
