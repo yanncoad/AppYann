@@ -36,16 +36,23 @@
             position: absolute;
             right: 16px;
             top: 0;
-            background: linear-gradient(90deg, var(--accent), #34c759);
+            background: var(--card);
             border: none;
             border-radius: 50%;
             width: 28px;
             height: 28px;
             font-size: 0.9em;
-            color: #fff;
+            color: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        #toggle-theme i {
+            background: linear-gradient(90deg, var(--accent), #34c759);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
         }
         .date-navigation {
             display: flex;
