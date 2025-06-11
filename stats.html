@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques</title>
+    <style>
+        :root { --bg:#ffffff; --fg:#000000; --card:#f0f0f0; }
+        [data-theme="dark"] { --bg:#1d1d1f; --fg:#ffffff; --card:#2c2c2e; }
+        body { font-family:-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; background:var(--bg); color:var(--fg); margin:0; min-height:100vh; }
+        h1{text-align:center;margin:16px 0;}
+        .nav{text-align:center;margin-bottom:10px;}
+        .nav a{margin:0 8px;color:var(--fg);text-decoration:none;}
+        #stats{width:95%;max-width:500px;margin:0 auto;}
+        .task{background:var(--card);margin:4px 0;padding:8px 12px;border-radius:10px;display:flex;justify-content:space-between;}
+    </style>
+</head>
+<body>
+<h1>Statistiques</h1>
+<div class="nav">
+    <a href="index.html">Accueil</a>
+    <a href="sport.html">Sport</a>
+    <a href="stats.html">Statistiques</a>
+</div>
+<div id="stats"></div>
+<script>
+const categories={
+    "Santé":["Sport","Petit déjeuner équilibré","Déjeuner équilibré","Dîner équilibré","Pas de grignotage"],
+    "Réseaux sociaux":["Post Tiktok lolo.puzzle","Post Tiktok LBB","Post Tiktok mymy.puzzle","Post Tiktok footballteamlogocircle","Post Tiktok kanoodle_addict","Post Tiktok kanoodle_experience","Post Instagram LBB","Post Instagram bretagnifique","Post Instagram lolo.puzzle"],
+    "Formation":["Formation Anglais","Formation Codex / ChatGPT"],
+    "Autre":["Lire 15 min","Regarder un épisode série","Tâche ménagère","Jouer avec les enfants"]
+};
+const tasks=Object.values(categories).flat();
+function initTheme(){const th=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',th);}
+function formatDate(d){return d.toISOString().split('T')[0];}
+function calculateSeries(index){
+    let count=0;let d=new Date();
+    while(true){
+        const st=JSON.parse(localStorage.getItem('tasks_'+formatDate(d))||null);
+        if(st && st[index]){count++;d.setDate(d.getDate()-1);}else{break;}
+    }
+    return count;
+}
+function getRecord(task){
+    const records=JSON.parse(localStorage.getItem('series_records')||'{}');
+    return records[task]||0;
+}
+function render(){
+    const container=document.getElementById('stats');
+    container.innerHTML='';
+    let idx=0;
+    for(const [cat,list] of Object.entries(categories)){
+        const title=document.createElement('h2');
+        title.textContent=cat;
+        container.appendChild(title);
+        list.forEach(task=>{
+            const div=document.createElement('div');
+            div.className='task';
+            const current=calculateSeries(idx);
+            const record=getRecord(task);
+            div.textContent=`${task} - série : ${current} / record : ${record}`;
+            container.appendChild(div);
+            idx++;
+        });
+    }
+}
+initTheme();
+render();
+</script>
+</body>
+</html>
