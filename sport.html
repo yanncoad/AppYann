@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séances de sport</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #000000;
+            --card: #f0f0f0;
+        }
+        [data-theme="dark"] {
+            --bg: #1d1d1f;
+            --fg: #ffffff;
+            --card: #2c2c2e;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            margin: 0;
+            min-height: 100vh;
+        }
+        h1 { text-align:center; margin:16px 0; }
+        .nav { text-align:center; margin-bottom:10px; }
+        .nav a { margin:0 8px; color:var(--fg); text-decoration:none; }
+        #controls { text-align:center; margin-bottom:20px; }
+        #list { width:95%; max-width:500px; margin:0 auto; }
+        .session { display:flex; align-items:center; background:var(--card); margin:4px 0; padding:8px 12px; border-radius:10px; }
+        .session.done { background:#4caf50; color:#fff; }
+        .session span { flex:1; }
+        dialog form { display:flex; flex-direction:column; gap:8px; }
+    </style>
+</head>
+<body>
+<h1>Séances de sport</h1>
+<div class="nav">
+    <a href="index.html">Accueil</a>
+    <a href="sport.html">Sport</a>
+    <a href="stats.html">Statistiques</a>
+</div>
+<div id="controls">
+    <button id="add">Ajouter une séance</button>
+</div>
+<div id="list"></div>
+<dialog id="modal">
+    <form id="form">
+        <label>Date: <input type="date" id="date" required></label>
+        <label>Sport: <input type="text" id="sport" required></label>
+        <label>Détail:<br><textarea id="detail"></textarea></label>
+        <div>
+            <button type="submit">Enregistrer</button>
+            <button type="button" id="cancel">Annuler</button>
+        </div>
+    </form>
+</dialog>
+<script>
+const categories = {
+    "Santé": [
+        "Sport",
+        "Petit déjeuner équilibré",
+        "Déjeuner équilibré",
+        "Dîner équilibré",
+        "Pas de grignotage"
+    ],
+    "Réseaux sociaux": [
+        "Post Tiktok lolo.puzzle",
+        "Post Tiktok LBB",
+        "Post Tiktok mymy.puzzle",
+        "Post Tiktok footballteamlogocircle",
+        "Post Tiktok kanoodle_addict",
+        "Post Tiktok kanoodle_experience",
+        "Post Instagram LBB",
+        "Post Instagram bretagnifique",
+        "Post Instagram lolo.puzzle"
+    ],
+    "Formation": [
+        "Formation Anglais",
+        "Formation Codex / ChatGPT"
+    ],
+    "Autre": [
+        "Lire 15 min",
+        "Regarder un épisode série",
+        "Tâche ménagère",
+        "Jouer avec les enfants"
+    ]
+};
+const tasks = Object.values(categories).flat();
+const sportIndex = tasks.indexOf('Sport');
+function initTheme(){
+    const th=localStorage.getItem('theme')||'dark';
+    document.documentElement.setAttribute('data-theme',th);
+}
+function loadSessions(){
+    return JSON.parse(localStorage.getItem('sport_sessions')||'[]');
+}
+function saveSessions(s){
+    localStorage.setItem('sport_sessions',JSON.stringify(s));
+}
+function render(){
+    const list=document.getElementById('list');
+    const sessions=loadSessions().sort((a,b)=>new Date(a.date)-new Date(b.date));
+    list.innerHTML='';
+    const today=new Date().toISOString().split('T')[0];
+    sessions.forEach((s,idx)=>{
+        const div=document.createElement('div');
+        div.className='session';
+        if(new Date(s.date)<=new Date()){
+            const st=JSON.parse(localStorage.getItem('tasks_'+s.date)||'[]');
+            if(st[sportIndex]) div.classList.add('done');
+        }
+        const date=document.createElement('span');
+        date.textContent=s.date;
+        const sport=document.createElement('span');
+        sport.textContent=s.sport;
+        const detail=document.createElement('span');
+        detail.textContent=s.detail;
+        const edit=document.createElement('button');
+        edit.textContent='✏️';
+        edit.addEventListener('click',()=>openModal(idx));
+        const del=document.createElement('button');
+        del.textContent='🗑️';
+        del.addEventListener('click',()=>{if(confirm('Supprimer ?')){const ss=loadSessions();ss.splice(idx,1);saveSessions(ss);render();}});
+        div.appendChild(date);div.appendChild(sport);div.appendChild(detail);div.appendChild(edit);div.appendChild(del);
+        list.appendChild(div);
+    });
+}
+function openModal(idx){
+    const modal=document.getElementById('modal');
+    const form=document.getElementById('form');
+    const sessions=loadSessions();
+    if(idx!=null){
+        const s=sessions[idx];
+        form.dataset.idx=idx;
+        document.getElementById('date').value=s.date;
+        document.getElementById('sport').value=s.sport;
+        document.getElementById('detail').value=s.detail;
+    }else{
+        delete form.dataset.idx;
+        document.getElementById('date').value=new Date().toISOString().split('T')[0];
+        document.getElementById('sport').value='';
+        document.getElementById('detail').value='';
+    }
+    modal.showModal();
+}
+document.getElementById('add').addEventListener('click',()=>openModal());
+document.getElementById('cancel').addEventListener('click',()=>document.getElementById('modal').close());
+document.getElementById('form').addEventListener('submit',e=>{
+    e.preventDefault();
+    const sessions=loadSessions();
+    const idx=e.target.dataset.idx;
+    const data={date:document.getElementById('date').value,sport:document.getElementById('sport').value,detail:document.getElementById('detail').value};
+    if(idx!=null){sessions[idx]=data;}else{sessions.push(data);}
+    saveSessions(sessions);document.getElementById('modal').close();render();
+});
+initTheme();
+render();
+</script>
+</body>
+</html>

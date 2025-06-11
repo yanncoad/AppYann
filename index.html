@@ -71,6 +71,15 @@
             font-size: 0.8em;
             margin-left: 4px;
         }
+        .nav {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .nav a {
+            margin: 0 8px;
+            color: var(--fg);
+            text-decoration: none;
+        }
         #controls {
             text-align: center;
             margin-bottom: 20px;
@@ -79,6 +88,11 @@
 </head>
 <body>
 <h1>Tâches du jour</h1>
+<div class="nav">
+    <a href="index.html">Accueil</a>
+    <a href="sport.html">Sport</a>
+    <a href="stats.html">Statistiques</a>
+</div>
 <div class="date-navigation">
     <button id="prev">Précédent</button>
     <span id="current-date"></span>
@@ -179,7 +193,7 @@ function render(){
             const record = updateRecord(task, seriesCount);
             const serieSpan = document.createElement('span');
             serieSpan.className='series';
-            serieSpan.textContent = `🔥 ${seriesCount} (record : ${record})`;
+            serieSpan.textContent = `🔥 ${seriesCount}`;
             div.appendChild(cb);
             div.appendChild(label);
             div.appendChild(serieSpan);

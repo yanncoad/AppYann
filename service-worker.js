@@ -2,7 +2,9 @@ const CACHE_NAME = 'suivi-cache-v1';
 const URLS = [
   'index.html',
   'manifest.json',
-  'service-worker.js'
+  'service-worker.js',
+  'sport.html',
+  'stats.html'
 ];
 self.addEventListener('install', e => {
   e.waitUntil(
