@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi quotidien</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --bg: #ffffff;
@@ -156,7 +157,7 @@
     </style>
 </head>
 <body>
-<h1>Tâches du jour <button id="toggle-theme">🌙</button></h1>
+<h1>Tâches du jour <button id="toggle-theme"><i class="fas fa-moon"></i></button></h1>
 <div class="date-navigation">
     <button id="prev">Précédent</button>
     <span id="current-date"></span>
@@ -169,9 +170,9 @@
 </div>
 <div id="tasks"></div>
 <nav class="bottom-nav">
-    <a href="index.html">🏠</a>
-    <a href="sport.html">⚽</a>
-    <a href="stats.html">📊</a>
+    <a href="index.html"><i class="fas fa-home"></i></a>
+    <a href="sport.html"><i class="fas fa-futbol"></i></a>
+    <a href="stats.html"><i class="fas fa-chart-bar"></i></a>
 </nav>
 <script>
 const categories = {
@@ -234,6 +235,7 @@ function updateRecord(task, count){
 function render(){
     const dateStr = formatDate(currentDate);
     document.getElementById('current-date').textContent = dateStr;
+    const sportDay = hasSportSession(dateStr);
     const statuses = loadStatuses(dateStr);
     const container = document.getElementById('tasks');
     container.innerHTML = '';
@@ -259,7 +261,7 @@ function render(){
                 render();
             });
             const label=document.createElement('label');
-            label.textContent=task;
+            label.textContent = task === 'Sport' ? (sportDay ? 'Sport' : 'Sport - Repos') : task;
             const seriesCount = calculateSeries(idx,dateStr);
             const record = updateRecord(task, seriesCount);
             const serieSpan = document.createElement('span');
@@ -305,10 +307,17 @@ function importData(e){
     };
     r.readAsText(f);
 }
+function setThemeIcon(th){
+    document.getElementById('toggle-theme').innerHTML = th==='dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+}
+function hasSportSession(dateStr){
+    const sessions=JSON.parse(localStorage.getItem('sport_sessions')||'[]');
+    return sessions.some(s=>s.date===dateStr);
+}
 function initTheme(){
     const th = localStorage.getItem('theme')||'dark';
     document.documentElement.setAttribute('data-theme',th);
-    document.getElementById('toggle-theme').textContent = th==='dark'?'🌙':'☀️';
+    setThemeIcon(th);
 }
 initTheme();
 render();
@@ -319,7 +328,7 @@ document.getElementById('toggle-theme').addEventListener('click',()=>{
     const next=current==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme',next);
     localStorage.setItem('theme',next);
-    document.getElementById('toggle-theme').textContent = next==='dark'?'🌙':'☀️';
+    setThemeIcon(next);
 });
 document.getElementById('export').addEventListener('click',exportData);
 document.getElementById('import').addEventListener('change',importData);
