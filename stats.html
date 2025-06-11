@@ -110,8 +110,9 @@ document.getElementById('toggle-theme').addEventListener('click',()=>{
 });
 document.getElementById('export').addEventListener('click',exportData);
 document.getElementById('import').addEventListener('change',importData);
+const currentPage = location.pathname.split('/').pop() || 'index.html';
 document.querySelectorAll('.bottom-nav a').forEach(a=>{
-    if(a.getAttribute('href')===location.pathname.split('/').pop()){
+    if(a.getAttribute('href')===currentPage){
         a.classList.add('active');
     }
 });
