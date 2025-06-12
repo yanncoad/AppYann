@@ -12,17 +12,20 @@
     </style>
 </head>
 <body>
-<h1>Statistiques <button id="toggle-theme"><i class="fas fa-moon"></i></button></h1>
+<header>
+    <nav class="top-nav">
+        <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+        <a href="sport.html"><i class="fas fa-futbol"></i> Sport</a>
+        <a href="stats.html"><i class="fas fa-chart-bar"></i> Stats</a>
+        <button id="toggle-theme"><i class="fas fa-moon"></i></button>
+    </nav>
+</header>
+<h1>Statistiques</h1>
 <div id="controls">
     <button id="export">Exporter</button>
     <input type="file" id="import" accept="application/json">
 </div>
 <div id="stats"></div>
-<nav class="bottom-nav">
-    <a href="index.html"><i class="fas fa-home"></i><span>Accueil</span></a>
-    <a href="sport.html"><i class="fas fa-futbol"></i><span>Sport</span></a>
-    <a href="stats.html"><i class="fas fa-chart-bar"></i><span>Stats</span></a>
-</nav>
 <script>
 const categories={
     "Santé":["Sport","Petit déjeuner équilibré","Déjeuner équilibré","Dîner équilibré","Pas de grignotage"],
@@ -102,7 +105,7 @@ document.getElementById('toggle-theme').addEventListener('click',()=>{
 document.getElementById('export').addEventListener('click',exportData);
 document.getElementById('import').addEventListener('change',importData);
 const currentPage = location.pathname.split('/').pop() || 'index.html';
-document.querySelectorAll('.bottom-nav a').forEach(a=>{
+document.querySelectorAll('.top-nav a').forEach(a=>{
     if(a.getAttribute('href')===currentPage){
         a.classList.add('active');
     }
