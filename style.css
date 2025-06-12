@@ -1,17 +1,17 @@
 :root {
-    --bg: #f5f5f7;
-    --fg: #1d1d1f;
+    --bg: #fafafa;
+    --fg: #212121;
     --card: #ffffff;
-    --accent: #007aff;
+    --accent: #6200ea;
 }
 [data-theme="dark"] {
-    --bg: #1d1d1f;
-    --fg: #ffffff;
-    --card: #2c2c2e;
-    --accent: #0a84ff;
+    --bg: #121212;
+    --fg: #e0e0e0;
+    --card: #1e1e1e;
+    --accent: #bb86fc;
 }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
     background: var(--bg);
     color: var(--fg);
     margin: 0;
@@ -20,84 +20,85 @@ body {
 }
 h1 {
     text-align: center;
-    margin: 16px 0;
+    margin: 20px 0;
     position: relative;
 }
 #toggle-theme {
     position: absolute;
     right: 16px;
     top: 0;
-    background: var(--card);
+    background: var(--accent);
     border: none;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 0.9em;
-    color: transparent;
+    width: 32px;
+    height: 32px;
+    color: var(--card);
     display: flex;
     align-items: center;
     justify-content: center;
-}
-#toggle-theme i {
-    background: linear-gradient(90deg, var(--accent), #34c759);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
 }
 .date-navigation {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 10px;
-    gap: 8px;
+    margin-bottom: 20px;
+    gap: 12px;
 }
 .date-navigation button {
-    background: linear-gradient(90deg, var(--accent), #34c759);
-    color: #fff;
+    background: var(--accent);
+    color: var(--card);
     border: none;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9em;
 }
 #tasks,
 #sessions,
 #stats,
 #list {
     width: 95%;
-    max-width: 500px;
+    max-width: 1200px;
     margin: 0 auto 20px;
 }
+#tasks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
 .category {
-    margin-bottom: 16px;
+    background: var(--card);
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 .category h2 {
-    margin: 8px 0;
-    font-size: 1.2em;
+    margin: 0 0 12px;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 4px;
 }
 .task,
 .session {
     display: flex;
     align-items: center;
-    background: var(--card);
-    margin: 4px 0;
-    padding: 8px 12px;
-    border-radius: 10px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    transition: background 0.3s;
+    background: var(--bg);
+    margin: 6px 0;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--accent);
 }
 .task.checked,
 .session.done {
-    background: #4caf50;
-    color: #fff;
+    background: var(--accent);
+    color: var(--card);
 }
 .task label,
 .session span {
     flex: 1;
+    margin-left: 8px;
 }
 .series {
     font-size: 0.8em;
@@ -109,10 +110,10 @@ h1 {
     left: 0;
     right: 0;
     background: var(--card);
+    border-top: 2px solid var(--accent);
     display: flex;
     justify-content: space-around;
     padding: 10px 0 5px;
-    border-top: 1px solid #aaa;
     box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
     z-index: 1000;
 }
@@ -132,7 +133,7 @@ h1 {
 }
 #progress-container {
     width: 95%;
-    max-width: 500px;
+    max-width: 1200px;
     margin: 0 auto 20px;
     background: var(--card);
     border-radius: 20px;
@@ -143,7 +144,7 @@ h1 {
 }
 #progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), #34c759);
+    background: var(--accent);
     width: 0%;
     transition: width 0.3s;
 }
@@ -161,8 +162,8 @@ h1 {
     appearance: none;
     width: 20px;
     height: 20px;
-    border: 2px solid var(--fg);
-    border-radius: 6px;
+    border: 2px solid var(--accent);
+    border-radius: 4px;
     position: relative;
     transition: background 0.2s, transform 0.2s;
 }
@@ -170,13 +171,13 @@ h1 {
     transform: scale(0.8);
 }
 .task input[type="checkbox"]:checked {
-    background: #4caf50;
-    border-color: #4caf50;
+    background: var(--accent);
+    border-color: var(--accent);
 }
 .task input[type="checkbox"]:checked::after {
     content: '✔';
     position: absolute;
-    color: #fff;
+    color: var(--card);
     font-size: 16px;
     top: 50%;
     left: 50%;

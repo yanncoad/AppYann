@@ -1,10 +1,11 @@
-const CACHE_NAME = 'suivi-cache-v2';
+const CACHE_NAME = 'suivi-cache-v3';
 const URLS = [
   'index.html',
   'manifest.json',
   'service-worker.js',
   'sport.html',
-  'stats.html'
+  'stats.html',
+  'style.css'
 ];
 // Mise en cache initiale des ressources
 self.addEventListener('install', event => {
