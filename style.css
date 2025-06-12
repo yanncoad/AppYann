@@ -1,16 +1,18 @@
 :root {
-    --bg: #f0f4ff;
-    --fg: #212121;
+    /* Palette claire douce */
+    --bg: #f6f8fa;
+    --fg: #333333;
     --card: #ffffff;
-    --accent: #8e24aa;
-    --accent2: #00bcd4;
+    --accent: #0077cc;
+    --accent2: #00cc99;
 }
 [data-theme="dark"] {
+    /* Palette sombre épurée */
     --bg: #121212;
     --fg: #e0e0e0;
-    --card: #1e1e1e;
-    --accent: #bb86fc;
-    --accent2: #03dac6;
+    --card: #1f1f1f;
+    --accent: #3399ff;
+    --accent2: #33cc99;
 }
 body {
     font-family: 'Poppins', 'Roboto', Arial, sans-serif;
