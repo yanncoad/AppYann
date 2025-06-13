@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Styles spécifiques à la page statistiques */
         .stat-emoji { font-size: 1.1em; }
@@ -24,6 +25,18 @@
     <button id="export">Exporter</button>
     <input type="file" id="import" accept="application/json">
 </div>
+<div id="calendar-controls">
+    <button id="prev-period">&lt;</button>
+    <span id="calendar-title"></span>
+    <button id="next-period">&gt;</button>
+    <select id="view-type">
+        <option value="month">Mois</option>
+        <option value="week">Semaine</option>
+    </select>
+</div>
+<div id="calendar"></div>
+<div id="global-stats"></div>
+<canvas id="trendChart" height="120"></canvas>
 <div id="stats"></div>
 <script>
 const categories={
@@ -33,6 +46,12 @@ const categories={
     "Autre":["Lire 15 min","Regarder un épisode série","Tâche ménagère","Jouer avec les enfants"]
 };
 const tasks=Object.values(categories).flat();
+const taskToCategory={};
+for(const [cat,list] of Object.entries(categories)){
+    list.forEach(t=>{taskToCategory[tasks.indexOf(t)]=cat;});
+}
+let viewType='month';
+let currentDate=new Date();
 function setThemeIcon(th){document.getElementById('toggle-theme').innerHTML=th==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';}
 function initTheme(){const th=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',th);setThemeIcon(th);}
 function formatDate(d){return d.toISOString().split('T')[0];}
@@ -48,6 +67,29 @@ function getRecord(task){
     const records=JSON.parse(localStorage.getItem('series_records')||'{}');
     return records[task]||0;
 }
+function loadAllTaskData(){
+    const data={};
+    for(let i=0;i<localStorage.length;i++){
+        const key=localStorage.key(i);
+        if(key.startsWith('tasks_')){
+            data[key.substring(6)]=JSON.parse(localStorage.getItem(key));
+        }
+    }
+    return data;
+}
+function computeStats(all){
+    const res={globalDone:0,globalTotal:0,perCat:{}};
+    for(const [date,statuses] of Object.entries(all)){
+        statuses.forEach((done,idx)=>{
+            const cat=taskToCategory[idx];
+            if(!res.perCat[cat]) res.perCat[cat]={done:0,total:0};
+            if(done){res.globalDone++;res.perCat[cat].done++;}
+            res.globalTotal++;res.perCat[cat].total++;
+        });
+    }
+    return res;
+}
+function rate(statuses){return statuses.filter(Boolean).length/tasks.length;}
 function exportData(){
     const data={tasks:{},seriesRecords:JSON.parse(localStorage.getItem('series_records')||'{}')};
     for(let i=0;i<localStorage.length;i++){
@@ -75,7 +117,73 @@ function importData(e){
     };
     r.readAsText(f);
 }
+function renderGlobalStats(stats){
+    const container=document.getElementById('global-stats');
+    container.innerHTML='';
+    const rateGlobal=stats.globalTotal?Math.round((stats.globalDone/stats.globalTotal)*100):0;
+    const p=document.createElement('p');
+    p.textContent=`Taux de réussite global : ${rateGlobal}%`;
+    container.appendChild(p);
+    for(const [cat,val] of Object.entries(stats.perCat)){
+        const div=document.createElement('div');
+        div.className='category-progress';
+        const label=document.createElement('span');
+        label.textContent=cat;
+        const prog=document.createElement('progress');
+        prog.max=100;
+        prog.value=val.total?Math.round((val.done/val.total)*100):0;
+        div.appendChild(label);
+        div.appendChild(prog);
+        container.appendChild(div);
+    }
+}
+function renderChart(all){
+    const ctx=document.getElementById('trendChart').getContext('2d');
+    const dates=Object.keys(all).sort();
+    const values=dates.map(d=>Math.round(rate(all[d])*100));
+    if(window.trendChart) window.trendChart.destroy();
+    window.trendChart=new Chart(ctx,{type:'line',data:{labels:dates,datasets:[{label:'% réussite',data:values,borderColor:'#7acc7d',fill:false}]},options:{scales:{y:{beginAtZero:true,max:100}}}});
+}
+function renderCalendar(all){
+    const container=document.getElementById('calendar');
+    container.innerHTML='';
+    let start=new Date(currentDate);
+    const title=document.getElementById('calendar-title');
+    if(viewType==='week'){
+        const day=(start.getDay()+6)%7;
+        start.setDate(start.getDate()-day);
+        title.textContent=`Semaine du ${formatDate(start)}`;
+        for(let i=0;i<7;i++){
+            const d=new Date(start);
+            d.setDate(start.getDate()+i);
+            container.appendChild(createCell(d));
+        }
+    }else{
+        start=new Date(start.getFullYear(),start.getMonth(),1);
+        title.textContent=`${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}`;
+        const first=(start.getDay()+6)%7;
+        for(let i=0;i<first;i++) container.appendChild(emptyCell());
+        const days=new Date(start.getFullYear(),start.getMonth()+1,0).getDate();
+        for(let d=1;d<=days;d++){
+            container.appendChild(createCell(new Date(start.getFullYear(),start.getMonth(),d)));
+        }
+    }
+    function emptyCell(){const c=document.createElement('div');c.className='calendar-cell empty';return c;}
+    function createCell(date){
+        const c=document.createElement('div');
+        c.className='calendar-cell';
+        c.textContent=date.getDate();
+        const st=all[formatDate(date)];
+        if(st){const r=rate(st);c.style.background=`hsl(${r*120},70%,50%)`;}
+        else{c.style.background='var(--card)';}
+        return c;
+    }
+}
 function render(){
+    const all=loadAllTaskData();
+    renderCalendar(all);
+    renderChart(all);
+    renderGlobalStats(computeStats(all));
     const container=document.getElementById('stats');
     container.innerHTML='';
     let idx=0;
@@ -111,6 +219,9 @@ document.getElementById('toggle-theme').addEventListener('click',()=>{
 });
 document.getElementById('export').addEventListener('click',exportData);
 document.getElementById('import').addEventListener('change',importData);
+document.getElementById('prev-period').addEventListener('click',()=>{if(viewType==='week'){currentDate.setDate(currentDate.getDate()-7);}else{currentDate.setMonth(currentDate.getMonth()-1);}render();});
+document.getElementById('next-period').addEventListener('click',()=>{if(viewType==='week'){currentDate.setDate(currentDate.getDate()+7);}else{currentDate.setMonth(currentDate.getMonth()+1);}render();});
+document.getElementById('view-type').addEventListener('change',e=>{viewType=e.target.value;render();});
 const currentPage = location.pathname.split('/').pop() || 'index.html';
 document.querySelectorAll('.side-nav a').forEach(a=>{
     if(a.getAttribute('href')===currentPage){
