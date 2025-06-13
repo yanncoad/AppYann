@@ -60,7 +60,10 @@ const categories = {
 const tasks = Object.values(categories).flat();
 const sportIndex = tasks.indexOf('Sport');
 let currentDate = new Date();
-function formatDate(d){return d.toISOString().split('T')[0];}
+function formatDate(d){
+    // normalise la date pour éviter le décalage lié au fuseau horaire
+    return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().split('T')[0];
+}
 function loadStatuses(date){
     const s = localStorage.getItem('tasks_'+date);
     return s?JSON.parse(s):tasks.map(()=>false);
