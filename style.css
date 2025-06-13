@@ -3,7 +3,7 @@
     --bg: #f6f8fa;
     --fg: #333333;
     --card: #ffffff;
-    --accent: #0077cc;
+    --accent: #ff6600;
     --accent2: #00cc99;
 }
 [data-theme="dark"] {
@@ -11,7 +11,7 @@
     --bg: #121212;
     --fg: #e0e0e0;
     --card: #1f1f1f;
-    --accent: #3399ff;
+    --accent: #ff9933;
     --accent2: #33cc99;
 }
 body {
@@ -78,7 +78,7 @@ h1 {
 .category {
     background: var(--card);
     padding: 16px;
-    border-radius: 12px;
+    border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 .category h2 {
@@ -97,7 +97,7 @@ h1 {
     background: var(--card);
     margin: 8px 0;
     padding: 8px 12px;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -123,6 +123,7 @@ h1 {
     gap: 20px;
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border-radius: 0 0 20px 20px;
     position: sticky;
     top: 0;
     z-index: 1000;
