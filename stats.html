@@ -40,7 +40,10 @@ const categories={
 const tasks=Object.values(categories).flat();
 function setThemeIcon(th){document.getElementById('toggle-theme').innerHTML=th==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';}
 function initTheme(){const th=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',th);setThemeIcon(th);}
-function formatDate(d){return d.toISOString().split('T')[0];}
+function formatDate(d){
+    // normalise la date pour éviter le décalage lié au fuseau horaire
+    return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().split('T')[0];
+}
 function calculateSeries(index){
     let count=0;let d=new Date();
     while(true){
