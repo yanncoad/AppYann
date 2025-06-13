@@ -157,7 +157,11 @@ h1 {
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 .side-nav a.active {
-    text-decoration: underline;
+    text-decoration: none;
+}
+
+.side-nav a.active:not(.home-btn) {
+    color: var(--accent);
 }
 #progress-container {
     width: 95%;
