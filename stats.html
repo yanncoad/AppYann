@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Styles spécifiques à la page statistiques */
         .stat-emoji { font-size: 1.1em; }
@@ -25,6 +26,10 @@
     <input type="file" id="import" accept="application/json">
 </div>
 <div id="points-container">Points : <span id="points-value"></span> <span id="badge"></span></div>
+<div id="calendar"></div>
+<div id="global-rate"></div>
+<div id="category-progress"></div>
+<canvas id="evolution" height="200"></canvas>
 <div id="stats"></div>
 <script>
 const categories={
@@ -100,6 +105,101 @@ function renderPoints(){
     document.getElementById('points-value').textContent=p;
     document.getElementById('badge').textContent=getBadge(p);
 }
+
+function loadAllData(){
+    const data={};
+    for(let i=0;i<localStorage.length;i++){
+        const key=localStorage.key(i);
+        if(key.startsWith('tasks_')){
+            data[key.substring(6)]=JSON.parse(localStorage.getItem(key)||'[]');
+        }
+    }
+    return data;
+}
+
+const taskToCategory=[];
+for(const [cat,list] of Object.entries(categories)){
+    list.forEach(()=>taskToCategory.push(cat));
+}
+
+function renderCalendar(){
+    const container=document.getElementById('calendar');
+    const now=new Date();
+    const year=now.getFullYear();
+    const month=now.getMonth();
+    const first=new Date(year,month,1);
+    const last=new Date(year,month+1,0);
+    const data=loadAllData();
+    container.innerHTML='';
+    for(let i=0;i<first.getDay();i++){
+        container.appendChild(document.createElement('div'));
+    }
+    for(let d=1;d<=last.getDate();d++){
+        const dateStr=formatDate(new Date(year,month,d));
+        const statuses=data[dateStr]||[];
+        const rate=statuses.length?statuses.filter(Boolean).length/statuses.length:0;
+        const div=document.createElement('div');
+        div.className='calendar-day';
+        div.textContent=d;
+        const hue=Math.round(rate*120);
+        div.style.backgroundColor=`hsl(${hue},70%,40%)`;
+        container.appendChild(div);
+    }
+}
+
+function computeSuccessRate(){
+    const data=loadAllData();
+    let done=0,total=0;
+    for(const statuses of Object.values(data)){
+        total+=statuses.length;
+        done+=statuses.filter(Boolean).length;
+    }
+    return total?Math.round((done/total)*100):0;
+}
+
+function renderSuccessRate(){
+    document.getElementById('global-rate').textContent='Taux de réussite global : '+computeSuccessRate()+'%';
+}
+
+function renderCategoryProgress(){
+    const data=loadAllData();
+    const progress={};
+    for(const cat of Object.keys(categories)){
+        progress[cat]={done:0,total:0};
+    }
+    for(const statuses of Object.values(data)){
+        statuses.forEach((s,i)=>{
+            const cat=taskToCategory[i];
+            if(!cat) return;
+            progress[cat].total++;
+            if(s) progress[cat].done++;
+        });
+    }
+    const container=document.getElementById('category-progress');
+    container.innerHTML='';
+    for(const [cat,val] of Object.entries(progress)){
+        const percent=val.total?Math.round((val.done/val.total)*100):0;
+        const div=document.createElement('div');
+        div.innerHTML=`<span>${cat}</span> ${percent}%`;
+        container.appendChild(div);
+    }
+}
+
+let chart;
+function renderChart(){
+    const ctx=document.getElementById('evolution').getContext('2d');
+    const data=loadAllData();
+    const dates=Object.keys(data).sort();
+    const labels=[];const values=[];
+    dates.slice(-30).forEach(d=>{
+        const st=data[d];
+        const rate=st.length?st.filter(Boolean).length/st.length:0;
+        labels.push(d);
+        values.push(Math.round(rate*100));
+    });
+    if(chart) chart.destroy();
+    chart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'% réussite',data:values,fill:false,borderColor:'#7acc7d'}]},options:{scales:{y:{min:0,max:100}}}});
+}
 function render(){
     const container=document.getElementById('stats');
     container.innerHTML='';
@@ -145,6 +245,10 @@ document.querySelectorAll('.side-nav a').forEach(a=>{
 initTheme();
 render();
 renderPoints();
+renderCalendar();
+renderSuccessRate();
+renderCategoryProgress();
+renderChart();
 </script>
 </body>
 </html>
