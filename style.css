@@ -3,16 +3,16 @@
     --bg: #f6f8fa;
     --fg: #333333;
     --card: #ffffff;
-    --accent: #ff6600;
-    --accent2: #00cc99;
+    --accent: #b39ddb;
+    --accent2: #a8d5e2;
 }
 [data-theme="dark"] {
     /* Palette sombre épurée */
-    --bg: #121212;
+    --bg: #2b2b33;
     --fg: #e0e0e0;
-    --card: #1f1f1f;
-    --accent: #ff9933;
-    --accent2: #33cc99;
+    --card: #3a3a43;
+    --accent: #cfb1e7;
+    --accent2: #89c9b8;
 }
 body {
     font-family: 'Poppins', 'Roboto', Arial, sans-serif;
