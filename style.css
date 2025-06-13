@@ -274,3 +274,34 @@ h1 {
 @media (min-width: 600px) {
     #tasks { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 }
+
+/* Calendrier statistiques */
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin: 20px;
+}
+.calendar-day {
+    background: var(--card);
+    border-radius: 6px;
+    padding: 6px;
+    text-align: center;
+    font-size: 0.8em;
+}
+#global-rate {
+    text-align:center;
+    margin:20px;
+    font-weight:bold;
+    color:var(--accent);
+}
+#category-progress {
+    margin:20px;
+}
+#category-progress div {
+    margin:4px 0;
+}
+#category-progress span {
+    display:inline-block;
+    width:60px;
+}
