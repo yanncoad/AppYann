@@ -228,6 +228,15 @@ h1 {
     padding: 6px 16px;
     margin: 0 4px;
 }
+#controls label#import-label {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 16px;
+    margin: 0 4px;
+    cursor: pointer;
+}
 .stats-category {
     background: var(--card);
     padding: 16px;
