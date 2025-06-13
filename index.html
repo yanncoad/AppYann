@@ -10,14 +10,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-    <nav class="top-nav">
-        <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
-        <a href="sport.html"><i class="fas fa-futbol"></i> Sport</a>
-        <a href="stats.html"><i class="fas fa-chart-bar"></i> Stats</a>
-        <button id="toggle-theme"><i class="fas fa-moon"></i></button>
-    </nav>
-</header>
+<nav class="side-nav">
+    <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+    <a href="sport.html"><i class="fas fa-futbol"></i> Sport</a>
+    <a href="stats.html"><i class="fas fa-chart-bar"></i> Stats</a>
+    <button id="toggle-theme"><i class="fas fa-moon"></i></button>
+</nav>
 <h1>Tâches du jour</h1>
 <div class="date-navigation">
     <button id="prev"><i class="fas fa-chevron-left"></i></button>
@@ -178,7 +176,7 @@ document.getElementById('toggle-theme').addEventListener('click',()=>{
     setThemeIcon(next);
 });
 const currentPage = location.pathname.split('/').pop() || 'index.html';
-document.querySelectorAll('.top-nav a').forEach(a=>{
+document.querySelectorAll('.side-nav a').forEach(a=>{
     if(a.getAttribute('href')===currentPage){
         a.classList.add('active');
     }

@@ -9,21 +9,19 @@
     <link rel="stylesheet" href="style.css">
     <style>
         #controls { text-align: center; margin-bottom: 20px; }
-        #controls button { background: linear-gradient(90deg, var(--accent), #34c759); color:#fff; border:none; border-radius:20px; padding:6px 16px; }
-        .session button { background: linear-gradient(90deg, var(--accent), #34c759); color:#fff; border:none; border-radius:6px; width:28px; height:28px; margin-left:4px; display:flex; align-items:center; justify-content:center; }
+        #controls button { background: var(--accent); color:#fff; border:none; border-radius:20px; padding:6px 16px; }
+        .session button { background: var(--accent); color:#fff; border:none; border-radius:6px; width:28px; height:28px; margin-left:4px; display:flex; align-items:center; justify-content:center; }
         dialog form { display:flex; flex-direction:column; gap:8px; }
-        dialog button { background: linear-gradient(90deg, var(--accent), #34c759); color:#fff; border:none; border-radius:20px; padding:6px 12px; margin-right:4px; }
+        dialog button { background: var(--accent); color:#fff; border:none; border-radius:20px; padding:6px 12px; margin-right:4px; }
     </style>
 </head>
 <body>
-<header>
-    <nav class="top-nav">
-        <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
-        <a href="sport.html"><i class="fas fa-futbol"></i> Sport</a>
-        <a href="stats.html"><i class="fas fa-chart-bar"></i> Stats</a>
-        <button id="toggle-theme"><i class="fas fa-moon"></i></button>
-    </nav>
-</header>
+<nav class="side-nav">
+    <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+    <a href="sport.html"><i class="fas fa-futbol"></i> Sport</a>
+    <a href="stats.html"><i class="fas fa-chart-bar"></i> Stats</a>
+    <button id="toggle-theme"><i class="fas fa-moon"></i></button>
+</nav>
 <h1>Séances de sport</h1>
 <div id="controls">
     <button id="add">Ajouter une séance</button>
@@ -151,7 +149,7 @@ document.getElementById('toggle-theme').addEventListener('click',()=>{
     setThemeIcon(next);
 });
 const currentPage = location.pathname.split('/').pop() || 'index.html';
-document.querySelectorAll('.top-nav a').forEach(a=>{
+document.querySelectorAll('.side-nav a').forEach(a=>{
     if(a.getAttribute('href')===currentPage){
         a.classList.add('active');
     }
