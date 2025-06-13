@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
     <style>
-        #controls { text-align: center; margin-bottom: 20px; }
+        /* Styles spécifiques à la page statistiques */
+        .stat-emoji { font-size: 1.1em; }
     </style>
 </head>
 <body>
@@ -79,18 +80,26 @@ function render(){
     container.innerHTML='';
     let idx=0;
     for(const [cat,list] of Object.entries(categories)){
+        const catDiv=document.createElement('div');
+        catDiv.className='stats-category';
         const title=document.createElement('h2');
         title.textContent=cat;
-        container.appendChild(title);
+        catDiv.appendChild(title);
         list.forEach(task=>{
             const div=document.createElement('div');
-            div.className='task';
+            div.className='stats-item';
+            const label=document.createElement('span');
+            label.textContent=task;
             const current=calculateSeries(idx);
             const record=getRecord(task);
-            div.textContent=`${task} - série : ${current} / record : ${record}`;
-            container.appendChild(div);
+            const values=document.createElement('span');
+            values.innerHTML=`<span class="stat-emoji">🔥</span> ${current} / <span class="stat-emoji">🏆</span> ${record}`;
+            div.appendChild(label);
+            div.appendChild(values);
+            catDiv.appendChild(div);
             idx++;
         });
+        container.appendChild(catDiv);
     }
 }
 document.getElementById('toggle-theme').addEventListener('click',()=>{

@@ -211,6 +211,48 @@ h1 {
     transform: translate(-50%, -50%);
 }
 
+/* Mise en forme de la page Statistiques */
+#controls {
+    text-align: center;
+    margin-bottom: 20px;
+}
+#controls button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 16px;
+    margin: 0 4px;
+}
+.stats-category {
+    background: var(--card);
+    padding: 16px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+.stats-category h2 {
+    margin: 0 0 12px;
+    font-size: 1.1em;
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 4px;
+}
+.stats-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card);
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.stats-item span:last-child {
+    color: var(--accent);
+    font-weight: bold;
+}
+
 @media (max-width: 599px) {
     #tasks { grid-template-columns: 1fr; }
 }
