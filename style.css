@@ -306,3 +306,10 @@ h1 {
 #category-progress span {
     flex-grow:1;
 }
+
+/* Popup de motivation */
+#motivation-popup{position:fixed;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:2000;}
+#motivation-popup .popup-content{background:var(--card);color:var(--fg);padding:20px;border-radius:10px;max-width:400px;text-align:center;box-shadow:0 4px 8px rgba(0,0,0,0.3);}
+#motivation-popup .popup-content p{margin:10px 0;}
+#motivation-popup button{margin-top:10px;background:var(--accent);color:var(--card);border:none;border-radius:20px;padding:6px 16px;}
+

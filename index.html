@@ -25,6 +25,19 @@
 <div id="progress-container"><div id="progress-bar"></div><span id="progress-text"></span></div>
 <div id="tasks"></div>
 <div id="sessions"></div>
+<div id="motivation-popup"><div class="popup-content">
+<p>Je fais du sport pour prendre soin de mon corps</p>
+<p>Faire du sport pour de futures années joyeuses</p>
+<p>Je peux le faire, je dois, pour ne plus subir</p>
+<p>J'ai une rage au fond de moi, il faut qu'elle sorte</p>
+<p>Me défouler me fera le plus grand bien</p>
+<p>Mieux manger parce que je respecte mon corps</p>
+<p>Terminer ma séance pour être fier(e) de moi</p>
+<p>Me renforcer, me challenger, gagner en confiance</p>
+<p>Je veux devenir ma meilleure version</p>
+<p>Je n'ai qu'une seule vie, je veux la vivre à 110%</p>
+<button id="close-popup">OK</button>
+</div></div>
 <script>
 const categories = {
     "Santé": [
@@ -213,6 +226,7 @@ function initTheme(){
 }
 initTheme();
 render();
+window.addEventListener("load",()=>{const pop=document.getElementById("motivation-popup");pop.style.display="flex";document.getElementById("close-popup").addEventListener("click",()=>{pop.style.display="none";});});
 document.getElementById('prev').addEventListener('click',()=>{currentDate.setDate(currentDate.getDate()-1);render();});
 document.getElementById('next').addEventListener('click',()=>{currentDate.setDate(currentDate.getDate()+1);render();});
 document.getElementById('toggle-theme').addEventListener('click',()=>{
