@@ -228,16 +228,6 @@ h1 {
     padding: 6px 16px;
     margin: 0 4px;
 }
-#points-container {
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: bold;
-    color: var(--accent);
-}
-#badge {
-    font-size: 1.2em;
-    margin-left: 8px;
-}
 .stats-category {
     background: var(--card);
     padding: 16px;
@@ -300,8 +290,10 @@ h1 {
 }
 #category-progress div {
     margin:4px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 #category-progress span {
-    display:inline-block;
-    width:60px;
+    flex-grow:1;
 }
