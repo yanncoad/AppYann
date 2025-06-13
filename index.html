@@ -168,6 +168,12 @@ function render(){
             });
             div.addEventListener('pointerup',()=>clearTimeout(timer));
             div.addEventListener('pointerleave',()=>clearTimeout(timer));
+            if(window.matchMedia('(pointer: fine)').matches){
+                div.addEventListener('dblclick',e=>{
+                    if(e.target.tagName==='INPUT') return;
+                    openComment(i,dateStr);
+                });
+            }
 
             const commentIcon = document.createElement('span');
             commentIcon.className = 'comment-icon';
