@@ -19,6 +19,7 @@ body {
     background: var(--bg);
     color: var(--fg);
     margin: 0;
+    margin-left: 200px;
     min-height: 100vh;
     padding-bottom: 60px;
 }
@@ -27,12 +28,10 @@ h1 {
     margin: 20px 0;
     position: relative;
     font-size: 1.5em;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    color: transparent;
+    color: var(--accent);
 }
 #toggle-theme {
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    background: var(--accent);
     border: none;
     border-radius: 50%;
     width: 36px;
@@ -51,7 +50,7 @@ h1 {
     gap: 12px;
 }
 .date-navigation button {
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    background: var(--accent);
     color: var(--card);
     border: none;
     width: 40px;
@@ -84,9 +83,7 @@ h1 {
 .category h2 {
     margin: 0 0 12px;
     font-size: 1.1em;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    color: transparent;
+    color: var(--accent);
     border-bottom: 1px solid var(--accent);
     padding-bottom: 4px;
 }
@@ -103,7 +100,7 @@ h1 {
 }
 .task.checked,
 .session.done {
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    background: var(--accent);
     color: var(--card);
 }
 .task label,
@@ -115,29 +112,31 @@ h1 {
     font-size: 0.8em;
     margin-left: 4px;
 }
-.top-nav {
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    border-radius: 0 0 20px 20px;
-    position: sticky;
+.side-nav {
+    position: fixed;
+    left: 0;
     top: 0;
+    bottom: 0;
+    width: 200px;
+    background: var(--card);
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
     z-index: 1000;
 }
-.top-nav a {
-    color: var(--card);
+.side-nav a {
+    color: var(--fg);
     text-decoration: none;
     font-weight: bold;
+    margin-bottom: 12px;
 }
-.top-nav a.active {
+.side-nav a.active {
     text-decoration: underline;
 }
-.top-nav #toggle-theme {
-    margin-left: auto;
+.side-nav #toggle-theme {
+    margin-top: auto;
 }
 #progress-container {
     width: 95%;
@@ -152,7 +151,7 @@ h1 {
 }
 #progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    background: var(--accent);
     width: 0%;
     transition: width 0.3s;
 }
@@ -180,7 +179,7 @@ h1 {
     transform: scale(0.8);
 }
 .task input[type="checkbox"]:checked {
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    background: var(--accent);
     border-color: var(--accent);
 }
 .task input[type="checkbox"]:checked::after {
