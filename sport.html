@@ -25,6 +25,7 @@
 <h1>Séances de sport</h1>
 <div id="controls">
     <button id="add">Ajouter une séance</button>
+    <button id="togglePast">Afficher les séances passées</button>
 </div>
 <div id="list"></div>
 <dialog id="modal">
@@ -71,6 +72,7 @@ const categories = {
 };
 const tasks = Object.values(categories).flat();
 const sportIndex = tasks.indexOf('Sport');
+let showPast = false;
 function setThemeIcon(th){
     document.getElementById('toggle-theme').innerHTML = th==='dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
 }
@@ -90,7 +92,9 @@ function render(){
     const sessions=loadSessions().sort((a,b)=>new Date(a.date)-new Date(b.date));
     list.innerHTML='';
     const today=new Date().toISOString().split('T')[0];
+    document.getElementById('togglePast').textContent = showPast ? 'Masquer les séances passées' : 'Afficher les séances passées';
     sessions.forEach((s,idx)=>{
+        if(!showPast && s.date < today) return;
         const div=document.createElement('div');
         div.className='session';
         if(new Date(s.date)<=new Date()){
@@ -133,6 +137,7 @@ function openModal(idx){
 }
 document.getElementById('add').addEventListener('click',()=>openModal());
 document.getElementById('cancel').addEventListener('click',()=>document.getElementById('modal').close());
+document.getElementById('togglePast').addEventListener('click',()=>{showPast=!showPast;render();});
 document.getElementById('form').addEventListener('submit',e=>{
     e.preventDefault();
     const sessions=loadSessions();
