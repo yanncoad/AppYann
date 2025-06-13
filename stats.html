@@ -24,6 +24,7 @@
     <button id="export">Exporter</button>
     <input type="file" id="import" accept="application/json">
 </div>
+<div id="points-container">Points : <span id="points-value"></span> <span id="badge"></span></div>
 <div id="stats"></div>
 <script>
 const categories={
@@ -71,9 +72,33 @@ function importData(e){
             if(data.tasks){for(const [d,s] of Object.entries(data.tasks)){localStorage.setItem('tasks_'+d,JSON.stringify(s));}}
             alert('Import réussi');
             render();
+            renderPoints();
         }catch(err){alert('Erreur lors de l\'import');}
     };
     r.readAsText(f);
+}
+function calculateTotalPoints(){
+    let total=0;
+    for(let i=0;i<localStorage.length;i++){
+        const key=localStorage.key(i);
+        if(key.startsWith('tasks_')){
+            const st=JSON.parse(localStorage.getItem(key)||'[]');
+            total+=st.filter(Boolean).length;
+        }
+    }
+    return total;
+}
+function getBadge(points){
+    if(points>=200) return '🏆';
+    if(points>=100) return '🥇';
+    if(points>=50) return '🥈';
+    if(points>=10) return '🥉';
+    return '🎯';
+}
+function renderPoints(){
+    const p=calculateTotalPoints();
+    document.getElementById('points-value').textContent=p;
+    document.getElementById('badge').textContent=getBadge(p);
 }
 function render(){
     const container=document.getElementById('stats');
@@ -119,6 +144,7 @@ document.querySelectorAll('.side-nav a').forEach(a=>{
 });
 initTheme();
 render();
+renderPoints();
 </script>
 </body>
 </html>
